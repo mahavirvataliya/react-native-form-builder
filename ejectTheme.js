@@ -27,7 +27,7 @@ try {
     '  );',
     '}',
     '',
-    'Head over to the docs(https://github.com/bietkul/react-native-form-builder) for detailed information on customization',
+    'Head over to the docs(https://github.com/mahavirvataliya/react-native-form-builder.git) for detailed information on customization',
   ], {
     color: 'yellow',
     borderColor: 'green',
