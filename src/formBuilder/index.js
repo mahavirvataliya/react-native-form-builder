@@ -11,6 +11,9 @@ import SelectField from '../fields/select';
 import FormField from '../fields/form';
 import baseTheme from '../theme';
 import { autoValidate, getInitState, getDefaultValue, getResetValue } from '../utils/methods';
+import MessageField from '../fields/message';
+import getTheme from "../native-base-theme/components";
+import { StyleProvider } from "native-base";
 
 const DefaultErrorComponent = (props) => {
   const attributes = props.attributes;
@@ -356,6 +359,14 @@ export default class FormBuilder extends Component {
                 {...this.props}
               />
             );
+          case 'message':
+            return (
+              <MessageField
+                ref={(c) => { this[field.name] = c; }}
+                {... commonProps}
+                {...this.props}
+              />
+            );
           default:
             return null;
         }
@@ -365,16 +376,17 @@ export default class FormBuilder extends Component {
   }
   render() {
     return (
-      <KeyboardAwareScrollView
-        keyboardShouldPersistTaps="always"
-        extraScrollHeight={20}
-        {...this.props.scrollViewProps}
-      >
-        <View>
-          {this.generateFields() || <View />}
-        </View>
-      </KeyboardAwareScrollView>
-
+      <StyleProvider style={getTheme()}>
+        <KeyboardAwareScrollView
+          keyboardShouldPersistTaps="always"
+          extraScrollHeight={20}
+          {...this.props.scrollViewProps}
+        >
+          <View>
+            {this.generateFields() || <View />}
+          </View>
+        </KeyboardAwareScrollView>
+      </StyleProvider>
     );
   }
 }
