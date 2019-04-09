@@ -14,6 +14,8 @@ import { autoValidate, getInitState, getDefaultValue, getResetValue } from '../u
 import MessageField from '../fields/message';
 import getTheme from "../native-base-theme/components";
 import { StyleProvider } from "native-base";
+import LogicResolver from '../logic-resolver';
+
 
 const DefaultErrorComponent = (props) => {
   const attributes = props.attributes;
@@ -47,6 +49,8 @@ export default class FormBuilder extends Component {
         ...initialState,
       },
       errorStatus: false,
+      logics: false,
+      orginalForm: false
     };
     // Supports Nested
     this.getValues = this.getValues.bind(this);
@@ -86,6 +90,13 @@ export default class FormBuilder extends Component {
       fields = _.omit(fields, nextState.hiddenFields);
 
       this.setState({ fields });
+    }
+    if (!_.isEqual(prevProps.logics, this.props.logics)) {
+      const nextState = this.updateState(this.props.fields);
+      let orginalForm = Object.assign({}, this.state.orginalForm, nextState.fields);
+      orginalForm = _.omit(orginalForm, nextState.hiddenFields);
+      let logics = Object.assign({}, this.state.logics, this.props.logics);
+      this.setState({ logics, orginalForm });
     }
   }
   updateState(fields) {
@@ -129,6 +140,31 @@ export default class FormBuilder extends Component {
       const newField = {};
       newField[valueObj.name] = valueObj;
       // this.props.customValidation(valueObj);
+
+      const formValues = this.getValues();
+      const logics = this.state.logics;
+      let fieldsToHide = [];
+
+      const logicResolver = new LogicResolver();
+      fieldsToHide = logicResolver.getFieldsToHide(
+        formValues,
+        logics,
+        this.state.fields
+      );
+
+      // let make copy of originl form
+      let fields = JSON.parse(JSON.stringify(this.state.orginalForm));
+
+      // remove hidden fields from array
+      fields.forEach((item, index) => {
+        if (fieldsToHide.includes(item.key)) {
+          fields.splice(index, 1);
+        }
+      });
+
+    this.setState({ fields });
+
+
       if (this.props.onValueChange &&
         typeof this.props.onValueChange === 'function') {
         this.setState({
