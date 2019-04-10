@@ -37,8 +37,9 @@ export default class LogicResolver {
     this.formValues = formValues;
     this.currentForm = currentForm;
     let fieldsToHide = [];
-    
-    
+    if(logics == undefined || logics == false || logics == null) {
+      return fieldsToHide;
+    }
     logics.forEach((logic) => {
       if (logic['status']) {
         

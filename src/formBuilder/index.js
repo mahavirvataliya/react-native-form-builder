@@ -41,6 +41,10 @@ export default class FormBuilder extends Component {
     customValidation: PropTypes.func,
     onValueChange: PropTypes.func,
   }
+
+  static defaultProps = {
+    logics: [],
+  };
   constructor(props) {
     super(props);
     const initialState = getInitState(props.fields);
@@ -49,7 +53,7 @@ export default class FormBuilder extends Component {
         ...initialState,
       },
       errorStatus: false,
-      logics: false,
+      logics: [],
       orginalForm: false
     };
     // Supports Nested
@@ -81,7 +85,9 @@ export default class FormBuilder extends Component {
   componentDidMount() {
     const { formData } = this.props;
     this.setValues(formData);
+
   }
+
   componentDidUpdate(prevProps) {
     if (!_.isEqual(prevProps.fields, this.props.fields)) {
       const nextState = this.updateState(this.props.fields);
@@ -90,13 +96,6 @@ export default class FormBuilder extends Component {
       fields = _.omit(fields, nextState.hiddenFields);
 
       this.setState({ fields });
-    }
-    if (!_.isEqual(prevProps.logics, this.props.logics)) {
-      const nextState = this.updateState(this.props.fields);
-      let orginalForm = Object.assign({}, this.state.orginalForm, nextState.fields);
-      orginalForm = _.omit(orginalForm, nextState.hiddenFields);
-      let logics = Object.assign({}, this.state.logics, this.props.logics);
-      this.setState({ logics, orginalForm });
     }
   }
   updateState(fields) {
@@ -113,6 +112,7 @@ export default class FormBuilder extends Component {
       }
     });
     return { fields: newFields, hiddenFields };
+    
   }
   onSummitTextInput(name) {
     const { fields } = this.state;
@@ -141,30 +141,7 @@ export default class FormBuilder extends Component {
       newField[valueObj.name] = valueObj;
       // this.props.customValidation(valueObj);
 
-      const formValues = this.getValues();
-      const logics = this.state.logics;
-      let fieldsToHide = [];
-
-      const logicResolver = new LogicResolver();
-      fieldsToHide = logicResolver.getFieldsToHide(
-        formValues,
-        logics,
-        this.state.fields
-      );
-
-      // let make copy of originl form
-      let fields = JSON.parse(JSON.stringify(this.state.orginalForm));
-
-      // remove hidden fields from array
-      fields.forEach((item, index) => {
-        if (fieldsToHide.includes(item.key)) {
-          fields.splice(index, 1);
-        }
-      });
-
-    this.setState({ fields });
-
-
+      this.resolveLogics()
       if (this.props.onValueChange &&
         typeof this.props.onValueChange === 'function') {
         this.setState({
@@ -182,6 +159,35 @@ export default class FormBuilder extends Component {
         });
       }
     }
+  }
+
+  resolveLogics() {
+    const formValues = this.getValues();
+    const logics = this.props.logics;
+    let fieldsToHide = [];
+
+    const logicResolver = new LogicResolver();
+    fieldsToHide = logicResolver.getFieldsToHide(
+      formValues,
+      logics,
+      this.props.fields
+    );
+    // let make copy of originl form
+    let fields = JSON.parse(JSON.stringify(this.props.orginalForm));
+
+    // remove hidden fields from array
+    if (fields && fields.length) {
+      fields.forEach((item, index) => {
+        if (fieldsToHide.includes(item.key)) {
+          fields.splice(index, 1);
+        }
+      });
+    }
+    const nextState = this.updateState(fields);
+    fieldsx = Object.assign({}, this.state.fields, fields);
+    fieldsx = _.omit(fieldsx, nextState.hiddenFields);
+
+    this.setState({ fields: fieldsx });
   }
   // Returns the values of the fields
   getValues() {
@@ -247,6 +253,7 @@ export default class FormBuilder extends Component {
         }
       }
     }
+    
   }
   // Helper function for setValues
   getFieldValue(fieldObj, value) {
@@ -319,6 +326,7 @@ export default class FormBuilder extends Component {
   }
   generateFields() {
     const theme = Object.assign(baseTheme, this.props.theme);
+    
     const { customComponents, errorComponent, fields } = this.props;
     // Use fields from props to maintain the order of the props if the hidden prop is changed
     const renderFields = fields.map(({ name: fieldName }, index) => {
