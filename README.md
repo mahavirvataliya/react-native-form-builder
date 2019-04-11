@@ -65,7 +65,11 @@ If you're looking for a better form management library with more advanced featur
 ## Installation
 
 ```bash
-$ npm i @infobizzs/rn-form-builder --save
+npm i @infobizzs/rn-form-builder --save
+```
+
+```bash
+yarn add @infobizzs/rn-form-builder
 ```
 
 ## Basic Usage
@@ -75,20 +79,121 @@ $ npm i @infobizzs/rn-form-builder --save
 ```bash
 $ npm i react-native -g
 ```
+
+
 - Initialization of a react-native project
 
 ```bash
 $ react-native init myproject
 ```
 
+For iOS 
+
+```
+cd ios
+pod init
+```
+
+then check there is no duplicates in targets
+
+then add following lines to podfile main project target
+
+```
+rn_path = '../node_modules/react-native'
+  pod 'yoga', path: "#{rn_path}/ReactCommon/yoga/yoga.podspec"
+  pod 'React', path: rn_path, subspecs: [
+    'Core',
+    'RCTActionSheet',
+    'RCTAnimation',
+    'RCTGeolocation',
+    'RCTImage',
+    'RCTLinkingIOS',
+    'RCTNetwork',
+    'RCTSettings',
+    'RCTText',
+    'RCTVibration',
+    'RCTWebSocket'
+  ]
+
+```
+
+
+add this at bottom of file
+
+```
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == "React"
+      target.remove_from_project
+    end
+  end
+end
+```
+
+then run below commands in main project directory
+
+
+```bash
+react-native link react-native-document-picker
+react-native link react-native-file-viewer
+react-native link react-native-image-crop-picker
+react-native link react-native-permissions
+react-native link rn-fetch-blob
+```
+
+
+
+Known issues
+
+the build.gradle should be like
+```
+  allprojects {
+    repositories {
+        mavenLocal()
+        google()
+        jcenter()
+        maven { url 'https://maven.google.com' }
+        maven { url "https://jitpack.io" }
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url "$rootDir/../node_modules/react-native/android"
+        }
+    }
+}
+```
+
+To install pod packages
+
+```
+cd ios
+pod install
+```
+
+
+Add this to info.plist
+```
+<key>NSCameraUsageDescription</key>
+	<string>$(PRODUCT_NAME) Need camera access to take pictures</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>$(PRODUCT_NAME) Need photo library access to save pictures</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>$(PRODUCT_NAME) Need photo library access to get pictures to use as attachments</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>$(PRODUCT_NAME) Need Mic access to take video</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+```
+
 - Then, edit `myproject/index.ios.js`, like this:  
 Example: Login Form consisting of three fields (username, password, country)
+
+
+
 
 ```jsx
 import React, { Component } from 'react';
 import { AppRegistry } from 'react-native';
-import { View, Text, Button } from 'native-base';
-import GenerateForm from 'react-native-form-builder';
+import { View, Text, Button, Root } from 'native-base';
+import GenerateForm from '@infobizzs/rn-form-builder';
 
 const styles = {
   wrapper: {
@@ -117,7 +222,7 @@ const fields = [
     label: 'Password',
   },
   {
-    type: 'picker',
+    type: 'image',
     name: 'country',
     mode: 'dialog',
     label: 'Select Country',
@@ -132,13 +237,17 @@ export default class FormGenerator extends Component {
   }
   render() {
     return (
-      <View style={styles.wrapper}>
+      <Root>
+        <View style={styles.wrapper}>
         <View>
           <GenerateForm
             ref={(c) => {
               this.formGenerator = c;
             }}
             fields={fields}
+            logics={[]}
+            orginalForm={[]}
+            scrollViewProps={{ scrollEnabled: false }}
           />
         </View>
         <View style={styles.submitButton}>
@@ -147,11 +256,10 @@ export default class FormGenerator extends Component {
           </Button>
         </View>
       </View>
+      </Root>
     );
   }
 }
-
-AppRegistry.registerComponent('FormGenerator', () => FormGenerator);
 ```
 ## Properties
 ### Basic
