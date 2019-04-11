@@ -15,6 +15,9 @@ import MessageField from '../fields/message';
 import getTheme from "../native-base-theme/components";
 import { StyleProvider } from "native-base";
 import LogicResolver from '../logic-resolver';
+import ImageField from '../fields/image';
+import VideoField from '../fields/video';
+import FileField from '../fields/file';
 
 
 const DefaultErrorComponent = (props) => {
@@ -411,6 +414,30 @@ export default class FormBuilder extends Component {
           case 'message':
             return (
               <MessageField
+                ref={(c) => { this[field.name] = c; }}
+                {... commonProps}
+                {...this.props}
+              />
+            );
+          case 'image':
+            return (
+              <ImageField
+                ref={(c) => { this[field.name] = c; }}
+                {... commonProps}
+                {...this.props}
+              />
+            );
+          case 'video':
+            return (
+              <VideoField
+                ref={(c) => { this[field.name] = c; }}
+                {... commonProps}
+                {...this.props}
+              />
+            );
+            case 'file':
+          return (
+              <FileField
                 ref={(c) => { this[field.name] = c; }}
                 {... commonProps}
                 {...this.props}
