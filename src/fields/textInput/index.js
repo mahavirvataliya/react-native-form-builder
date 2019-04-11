@@ -32,6 +32,7 @@ export default class TextInputField extends Component {
                   height: inputProps && inputProps.multiline && (Platform.OS === 'ios' ? undefined : null),
                   padding: 0,
                 }}
+                maxHeight={150}
                 ref={(c) => { this.textInput = c; }}
                 underlineColorAndroid="transparent"
                 numberOfLines={3}

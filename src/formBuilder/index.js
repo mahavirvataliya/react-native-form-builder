@@ -117,6 +117,11 @@ export default class FormBuilder extends Component {
   onSummitTextInput(name) {
     const { fields } = this.state;
     const index = Object.keys(fields).indexOf(name);
+
+    const field = this[Object.keys(fields)[index]];
+    if (field && field.props && field.props.attributes && field.props.attributes.props && field.props.attributes.props.multiline) {
+      return;
+    }
     if (index !== -1 && this[Object.keys(fields)[index + 1]]
       && this[Object.keys(fields)[index + 1]].textInput) {
       this[Object.keys(fields)[index + 1]].textInput._root.focus();
