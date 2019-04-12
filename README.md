@@ -139,6 +139,7 @@ react-native link react-native-file-viewer
 react-native link react-native-image-crop-picker
 react-native link react-native-permissions
 react-native link rn-fetch-blob
+react-native link react-native-share
 ```
 
 
@@ -172,7 +173,7 @@ pod install
 
 Add this to info.plist
 ```
-<key>NSCameraUsageDescription</key>
+  <key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) Need camera access to take pictures</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>$(PRODUCT_NAME) Need photo library access to save pictures</string>
@@ -180,8 +181,40 @@ Add this to info.plist
 	<string>$(PRODUCT_NAME) Need photo library access to get pictures to use as attachments</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(PRODUCT_NAME) Need Mic access to take video</string>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
+
+
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+	<string>whatsapp</string>
+	<string>mailto</string>
+	</array>
+
+
+
 ```
+
+edit MainApplication.java such as
+
+From
+
+``` java
+public class MainApplication extends Application implements ReactApplication {
+
+```
+To 
+
+``` java
+import cl.json.ShareApplication;
+
+public class MainApplication extends Application implements ShareApplication, ReactApplication {
+
+  @Override
+  public String getFileProviderAuthority() {
+    return BuildConfig.APPLICATION_ID + ".provider";
+  }
+```
+
+
 
 - Then, edit `myproject/index.ios.js`, like this:  
 Example: Login Form consisting of three fields (username, password, country)
