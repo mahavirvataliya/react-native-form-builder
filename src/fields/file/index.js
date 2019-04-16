@@ -14,7 +14,7 @@ export default class FileField extends Component {
   }
 
   render() {
-    const { theme, attributes, ErrorComponent, updateValue } = this.props;
+    const { theme, attributes, ErrorComponent, updateValue, orginalForm } = this.props;
     return (
      <FileItem
       attributes={attributes}
@@ -24,6 +24,7 @@ export default class FileField extends Component {
       multiple={false}
       mediaType="any"
       updateValue={updateValue}
+      orginalForm={orginalForm}
       />
     );
   }

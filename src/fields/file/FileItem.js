@@ -23,6 +23,7 @@ import {
 import ViewerService from '@infobizzs/rn-form-builder/src/services/Viewer';
 import FilePickerService from '@infobizzs/rn-form-builder/src/services/FilePicker';
 import ShareService from '@infobizzs/rn-form-builder/src/services/ShareService';
+import FileList from '@infobizzs/rn-form-builder/src/fields/file/FileList';
 
 
 const isIOS = Platform.OS === 'ios';
@@ -71,15 +72,21 @@ export default class FileItem extends Component {
     this.setState({
       images: imagesX,
     })
- 
-    this.props.updateValue(this.props.attributes.name, this.state.images);
+
+    if(this.state.images.length) {
+      this.props.updateValue(this.props.attributes.name, this.state.images[0]);
+    }
    }
 
-   deleteRow(image) {
+   deleteRow = (image) => {
     let data = this.state.images;
     data = data.filter((item) => item.path !== image.path)
-    this.setState({ images: data })
+    this.setState({ images: [] })
+    this.props.updateValue(this.props.attributes.name, []);
     console.log(data);
+
+    this.props.updateValue(this.props.attributes.name);
+
   }
 
   renderDefaultImageList = () => {
@@ -90,64 +97,30 @@ export default class FileItem extends Component {
 
     if (attributes && attributes.value) {
       const { value } = attributes;
-      const image = {
-        thumbURL: value.thumb_url,
-        name: value.name,
-        fileURL: value.file_url
+      if(value && value.thumb_url) {
+        const image = {
+          thumbURL: value.thumb_url,
+          name: value.name,
+          fileURL: value.file_url
+        }
+        images.push(image);
       }
-      images.push(image);
     }
     
     return (
-        <FlatList
-            data={images}
-            scrollEnabled={false}
-            keyExtractor={(item, index) => String(item) + index.toString()}
-            renderItem={({ item }) => <ListItem thumbnail onPress={() => this.onViewPress(item)} >
-                   <CardItem style={{ paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }}>
-                   <Left>
-                      <Thumbnail square source={{ uri: item.thumbURL  }} resizeMode="contain" />
-                      <Body>
-                        <Text style={{ color: theme.inputColor }}>{item.name}</Text>
-                      </Body>
-                    </Left>
-                </CardItem>
-              </ListItem>
-              }
-          />
+       <FileList files={images} theme={theme} onDeleteFile={(file) => this.deleteRow(file)} />
     );
   }
 
   renderLocalImageList = () => {
+    const { theme } = this.props;
     return (
-          <FlatList
-            data={this.state.images}
-            scrollEnabled={false}
-            keyExtractor={(item, index) => String(item) + index.toString()}
-            renderItem={({ item }) => 
-                <ListItem thumbnail onPress={() => this.onViewPress(item)} >
-                   <CardItem style={{ paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }}>
-                   <Left>
-                      <Thumbnail square source={{ uri: item.path  }} />
-                      <Body>
-                        <Text>{item.name}</Text>
-                      </Body>
-                    </Left>
-                  <Right>
-                      <Button transparent danger onPress={() => this.deleteRow(item)}>
-                       <Icon active  name="trash" />
-                     </Button>
-                  </Right>
-                </CardItem>
-              </ListItem>
-              }
-          />
+      <FileList files={this.state.images} theme={theme} onDeleteFile={(file) => this.deleteRow(file)}/>
     );
   }
 
   render() {
     const { theme, attributes, ErrorComponent } = this.props;
-
     const selectedText = this.state.images.length || attributes.value ? 'Change' : 'Attach';
     return (
       <View style={{ marginLeft: 2 }}>
