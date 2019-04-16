@@ -14,10 +14,10 @@ class MessageField extends Component {
   }
 
   render() {
-    const { attributes } = this.props;
+    const { theme, attributes, ErrorComponent } = this.props;
     return (
       <View style={styles.container}>
-        <Text style={{fontSize: 16}}>{attributes.message}</Text>
+        <Text style={{ color: theme.titleFontColor, fontSize: theme.titleFontSize }}>{attributes.message}</Text>
       </View>
     );
   }

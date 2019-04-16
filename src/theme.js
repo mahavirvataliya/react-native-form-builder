@@ -2,17 +2,19 @@ import { Platform } from 'react-native';
 
 export default {
   backgroundColor: '#5cb85c',
-  textInputBgColor: 'black',
+  textInputBgColor: '#37474f',
   pickerBgColor: 'transparent',
-  textInputIconColor: '#000',
-  pickerColorSelected: '#000',
-  inputBorderColor: '#D9D5DC',
-  borderWidth: 0,
+  textInputIconColor: '#37474f',
+  pickerColorSelected: '#37474f',
+  inputBorderColor: '#ddd',
+  borderWidth: 0.5,
   inputColorPlaceholder: '#575757',
-  inputColor: '#111',
-  inputFontSize: 40,
-  labelActiveColor: '#111',
+  inputColor: '#37474f',
+  inputFontSize: 17,
+  labelActiveColor: '#37474f',
   errorMsgColor: '#ed2f2f',
   changeTextInputColorOnError: true,
   textInputErrorIcon: 'close-circle',
+  titleFontColor: '#263238',
+  titleFontSize: 18
 };

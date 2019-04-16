@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Modal, Dimensions } from 'react-native';
+import { Modal, Dimensions, Platform } from 'react-native';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
   Button,
 } from 'native-base';
 
+const isIOS = Platform.OS === 'ios';
 const deviceWidth = Dimensions.get('window').width;
 
 export default class SelectField extends Component {
@@ -62,14 +63,14 @@ export default class SelectField extends Component {
     (attributes.value && attributes.value[attributes.labelKey]) || 'None'
     : attributes.value || 'None';
     return (
-      <View>
+      <View style={{ marginLeft: 2 }}>
         <ListItem icon onPress={() => this.toggleModalVisible()}>
           <Body>
-            <Text>{attributes.label}</Text>
+            <Text style={{ color: theme.inputColor, paddingLeft: isIOS ? 0 : 3 }}>{attributes.label}</Text>
           </Body>
           <Right>
             <View style={{ width: deviceWidth / 2, alignItems: 'flex-end' }}>
-              <Text numberOfLines={1} ellipSizeMode="tail">{selectedText}</Text>
+              <Text numberOfLines={1} ellipSizeMode="tail" style={{ color: theme.inputColor }}>{selectedText}</Text>
             </View>
 
             <Icon name="ios-arrow-forward" />

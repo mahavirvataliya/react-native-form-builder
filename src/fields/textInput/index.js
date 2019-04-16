@@ -4,6 +4,7 @@ import { View, Item, Input, Icon, ListItem, Text } from 'native-base';
 import { Platform } from 'react-native';
 import { getKeyboardType } from '../../utils/methods';
 
+const isIOS = Platform.OS === 'ios';
 export default class TextInputField extends Component {
   static propTypes = {
     attributes: PropTypes.object,
@@ -15,12 +16,23 @@ export default class TextInputField extends Component {
   handleChange(text) {
     this.props.updateValue(this.props.attributes.name, text);
   }
+
+  getHeight = () => {
+    const { attributes } = this.props;
+    const inputProps = attributes.props;
+
+    if(!inputProps && !isIOS) {
+      return 40;
+    }
+
+    return inputProps && inputProps.multiline && (Platform.OS === 'ios' ? undefined : 40);
+  }
   render() {
     const { theme, attributes, ErrorComponent } = this.props;
     const inputProps = attributes.props;
     const keyboardType = getKeyboardType(attributes.type);
     return (
-      <ListItem style={{ borderBottomWidth: 0, paddingVertical: 5 }}>
+      <ListItem style={{ borderBottomWidth: 0, paddingVertical: 0, paddingBottom: 0, paddingTop: 0, margin: 0 }}>
         <View style={{ flex: 1 }}>
           <View>
             <Item error={theme.changeTextInputColorOnError ? attributes.error : null}>
@@ -29,8 +41,10 @@ export default class TextInputField extends Component {
                 }
               <Input
                 style={{
-                  height: inputProps && inputProps.multiline && (Platform.OS === 'ios' ? undefined : null),
-                  padding: 0,
+                  height: this.getHeight(),
+                  paddingTop: isIOS ? 12 : 0,
+                  paddingBottom: isIOS ? 12 : 0,
+                  color: theme.inputColor
                 }}
                 maxHeight={150}
                 ref={(c) => { this.textInput = c; }}
