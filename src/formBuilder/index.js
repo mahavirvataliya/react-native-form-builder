@@ -88,6 +88,8 @@ export default class FormBuilder extends Component {
   componentDidMount() {
     const { formData } = this.props;
     this.setValues(formData);
+    const fieldsResolved = this.resolveLogics();
+    this.setState({ fields: fieldsResolved });
 
   }
 
@@ -149,19 +151,20 @@ export default class FormBuilder extends Component {
       newField[valueObj.name] = valueObj;
       // this.props.customValidation(valueObj);
 
-      this.resolveLogics()
+      const fieldsResolved = this.resolveLogics();
+
       if (this.props.onValueChange &&
         typeof this.props.onValueChange === 'function') {
         this.setState({
           fields: {
-            ...this.state.fields,
+            ...fieldsResolved,
             ...newField,
           }
         }, () => this.props.onValueChange());
       } else {
         this.setState({
           fields: {
-            ...this.state.fields,
+            ...fieldsResolved,
             ...newField,
           }
         });
@@ -182,20 +185,16 @@ export default class FormBuilder extends Component {
     );
     // let make copy of originl form
     let fields = JSON.parse(JSON.stringify(this.props.orginalForm));
-
+    let resolvedFields = [];
     // remove hidden fields from array
     if (fields && fields.length) {
       fields.forEach((item, index) => {
-        if (fieldsToHide.includes(item.key)) {
-          fields.splice(index, 1);
+        if (!fieldsToHide.includes(item.key)) {
+          resolvedFields[item.name] = item;
         }
       });
     }
-    const nextState = this.updateState(fields);
-    fieldsx = Object.assign({}, this.state.fields, fields);
-    fieldsx = _.omit(fieldsx, nextState.hiddenFields);
-
-    this.setState({ fields: fieldsx });
+    return resolvedFields;
   }
   // Returns the values of the fields
   getValues() {
